@@ -13,6 +13,21 @@ function tang -d "Create and/or attach to tmux session"
         return 0
     end
 
+    set paths (_get_paths)
+    set names (_get_names $paths)
+
+    set -q argv[1]
+    and set name $argv[1]
+    or set name (string join \n $names | fzf) || return
+
+    set idx (contains -i $name $names)
+    and set dir $paths[$idx]
+    or set dir (pwd)
+
+    _switch_session $name $dir
+end
+
+function _get_paths
     for path in $tang_paths
         set resolved_path (path resolve $path)
         test -d $resolved_path || continue
@@ -21,30 +36,31 @@ function tang -d "Create and/or attach to tmux session"
         # we use its subdirectiories instead of the directory itself
         if test (string sub -s -1 $path) = /
             for dir in $resolved_path/*
-                test -d $dir && set paths $paths $dir
+                test -d $dir && echo $dir
             end
         else
-            set paths $paths $resolved_path
+            echo $resolved_path
         end
     end
+end
 
-    for path in $paths
-        set names $names (path basename $path)
+function _get_names
+    for path in $argv
+        set -l name (path basename $path)
+        set names $names $name
+        echo $name
     end
 
-    set -q argv[1]
-    and set name $argv[1]
-    or set name (string join \n $names | fzf) || return
-
-    set idx (contains -i $name $names) || begin
-        echo "$cmd: Session named `$name` is not managed by $cmd" >&2
-        return 1
+    for name in (tmux list-sessions -F "#{session_name}")
+        contains $name $names
+        or echo $name
     end
+end
 
+function _switch_session -a name dir
     tmux has-session -t=$name 2>/dev/null || begin
         # could pass "editor" as a argument to command below
         # but I want to be able to exit vim and not kill the tmux window
-        set dir $paths[$idx]
         tmux new-session -ds $name -c $dir -n editor
         and tmux send-keys -t $name "$EDITOR ." Enter
         and tmux new-window -dt "$name:" -c $dir -n terminal
