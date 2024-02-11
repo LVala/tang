@@ -28,15 +28,15 @@ to corresponding directories in your `$__fish_config_dir`.
 
 ## Usage
 
-Let's start with the concept of *tang sessions*, which is a list
-created based on the `$tang_paths` environment variable:
+Let's start with the concept of *tang sessions*, which is a list of strings
+created based on the `tang_paths` environment variable:
 
 ```shell
 set tang_paths ~/notes ~/projects/
 ```
 
 `$tang_paths` must be a list of directory paths. If the path
-ends with a trailing slash */*, `tang` expands it to all of its subdirectories.
+ends with a trailing slash '/', `tang` expands it to all of its subdirectories.
 So the variable above would generate these paths:
 
 ```shell
@@ -46,7 +46,7 @@ So the variable above would generate these paths:
 # and all of the other directories in ~/projects...
 ```
 
-and then generate tmux session names based on these paths:
+and then generate session names based on these paths:
 
 ```shell
 notes
@@ -55,20 +55,20 @@ awesome_project
 ...
 ```
 
-Let's call this the *tang sessions* (**warning!** duplicate session names currently not handled).
+Let's call this the *tang sessions* (**warning!** duplicate session names currently not supported).
 
 You can use the `tang some_session` command to create and/or attach
 to a tmux session named `some_session`. If the session does not exist,
 `tang` will create it and set the initial directory to:
 
-* output of `pwd`, if the session doesn't belong to *tang sessions*,
+* the output of `pwd`, if the session doesn't belong to *tang sessions*,
 * directory corresponding to the name, if the session belongs to *tang sessions*.
 
 New sessions are always created with two windows: one with `$EDITOR` open,
-second with a shell (currently not configurable).
+second with just the shell (currently not configurable).
 Otherwise, if the session exists, `tang` will attach to it.
 
-If called without arguments, `tang` will make you choose the the session
+If called without arguments, `tang` will make you choose the session
 name from the *tang sessions* list, together with other existing tmux sessions
 using a fuzzy picker.
 
