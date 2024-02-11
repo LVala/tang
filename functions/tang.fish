@@ -51,7 +51,7 @@ function _tang_get_names
         echo $name
     end
 
-    for name in (tmux list-sessions -F "#{session_name}")
+    for name in (tmux list-sessions -F "#{session_name}" 2>/dev/null)
         contains $name $names
         or echo $name
     end
