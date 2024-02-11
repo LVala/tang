@@ -18,7 +18,7 @@ function tang -d "Create and/or attach to tmux session"
 
     set -q argv[1]
     and set name $argv[1]
-    or set name (string join \n $names | fzf) || return
+    or set name (string join \n $names | fzf --tac) || return
 
     set idx (contains -i $name $names)
     and set dir $paths[$idx]
