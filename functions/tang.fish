@@ -13,8 +13,8 @@ function tang -d "Create and/or attach to tmux session"
         return 0
     end
 
-    set paths (_get_paths)
-    set names (_get_names $paths)
+    set paths (_tang_get_paths)
+    set names (_tang_get_names $paths)
 
     set -q argv[1]
     and set name $argv[1]
@@ -24,10 +24,10 @@ function tang -d "Create and/or attach to tmux session"
     and set dir $paths[$idx]
     or set dir (pwd)
 
-    _switch_session $name $dir
+    _tang_switch_session $name $dir
 end
 
-function _get_paths
+function _tang_get_paths
     for path in $tang_paths
         set resolved_path (path resolve $path)
         test -d $resolved_path || continue
@@ -44,7 +44,7 @@ function _get_paths
     end
 end
 
-function _get_names
+function _tang_get_names
     for path in $argv
         set -l name (path basename $path)
         set names $names $name
@@ -57,7 +57,7 @@ function _get_names
     end
 end
 
-function _switch_session -a name dir
+function _tang_switch_session -a name dir
     tmux has-session -t=$name 2>/dev/null || begin
         # could pass "editor" as a argument to command below
         # but I want to be able to exit vim and not kill the tmux window
