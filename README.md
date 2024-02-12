@@ -6,6 +6,8 @@
 ![GitHub License](https://img.shields.io/github/license/LVala/tang)
 
 ### Dead simple [tmux](https://github.com/tmux/tmux/wiki) session picker for [fish](https://fishshell.com/) 🐟
+
+![tang demo](tang.gif)
 </div>
 
 ## Installation
