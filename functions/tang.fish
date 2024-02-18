@@ -1,28 +1,30 @@
 function tang -d "Create and/or attach to tmux session"
-    argparse --max-args 1 h/help v/version -- $argv
+    set -l options h/help v/version
+    argparse --max-args 1 $options -- $argv
     or return
 
-    set cmd (status current-command)
-    if set -ql _flag_help
-        echo "$cmd [-h|--help] [-v|--version] [SESSION_NAME]"
-        return 0
-    end
+    set -l cmd (status current-command)
+    set -l tang_help "[-h|--help] [-v|--version] [SESSION]"
+    set -l tang_version "v0.1.0"
 
-    if set -ql _flag_version
-        echo "$cmd v0.1.0"
-        return 0
-    end
+    set -ql _flag_help
+    and echo "$cmd $tang_help"
+    and return 0
 
-    set paths (_tang_get_paths)
-    set names (_tang_get_names $paths)
+    set -ql _flag_version
+    and echo "$cmd $tang_version"
+    and return 0
+
+    set -l paths (_tang_get_paths)
+    set -l names (_tang_get_names $paths)
 
     set -q argv[1]
-    and set name $argv[1]
-    or set name (string join \n $names | fzf --tac) || return
+    and set -l name $argv[1]
+    or set -l name (string join \n $names | fzf --tac) || return
 
     set idx (contains -i $name $names)
-    and set dir $paths[$idx]
-    or set dir (pwd)
+    and set -l dir $paths[$idx]
+    or set -l dir (pwd)
 
     _tang_switch_session $name $dir
 end
