@@ -1,10 +1,10 @@
 function tang -d "Create and/or attach to tmux session"
-    set -l options h/help v/version
+    set -l options h/help v/version e/no-editor
     argparse --max-args 1 $options -- $argv
     or return
 
     set -l cmd (status current-command)
-    set -l tang_help "[-h|--help] [-v|--version] [SESSION]"
+    set -l tang_help "[-h|--help] [-v|--version] [-e|--no-editor] [SESSION]"
     set -l tang_version "v0.1.0"
 
     set -ql _flag_help
@@ -26,7 +26,16 @@ function tang -d "Create and/or attach to tmux session"
     and set -l dir $paths[$idx]
     or set -l dir (pwd)
 
-    _tang_switch_session $name $dir
+    tmux has-session -t=$name 2>/dev/null || begin
+        tmux new-session -ds $name -c $dir -n terminal
+
+        set -ql _flag_no_editor
+        or tmux new-window -dbt "$name:" -c $dir -n editor "fish -C $EDITOR"
+    end
+
+    set -q TMUX
+    and tmux switch-client -t $name
+    or tmux attach-session -t $name
 end
 
 function _tang_get_paths
@@ -57,18 +66,4 @@ function _tang_get_names
         contains $name $names
         or echo $name
     end
-end
-
-function _tang_switch_session -a name dir
-    tmux has-session -t=$name 2>/dev/null || begin
-        # could pass "editor" as a argument to command below
-        # but I want to be able to exit vim and not kill the tmux window
-        tmux new-session -ds $name -c $dir -n editor
-        and tmux send-keys -t $name "$EDITOR ." Enter
-        and tmux new-window -dt "$name:" -c $dir -n terminal
-    end
-
-    set -q TMUX
-    and tmux switch-client -t $name
-    or tmux attach-session -t $name
 end
