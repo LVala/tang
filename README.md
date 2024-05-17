@@ -66,8 +66,7 @@ to a tmux session named `some_session`. If the session does not exist,
 * the output of `pwd`, if the session doesn't belong to *tang sessions*,
 * directory corresponding to the name, if the session belongs to *tang sessions*.
 
-New sessions are always created with two windows: one with `$EDITOR` open,
-second with just the shell (currently not configurable).
+If the `--editor` flag is used, a window with `$EDITOR` will be additionally opened and selected.
 Otherwise, if the session exists, `tang` will attach to it.
 
 If called without arguments, `tang` will make you choose the session
@@ -83,21 +82,22 @@ This is my personal config:
 set -g tang_paths ~/repos/
 
 if status is-interactive
-    set -q TMUX || tang misc
+    # in TTY or already in tmux? don't run tang
+    string match -q '/dev/tty*' (tty)
+    or set -q TMUX || tang misc
 end
 ```
 
 ```shell
 # in tmux.conf
-bind-key j display-popup -E "fish -c tang"
+bind-key j display-popup -E "fish -c 'tang -e'"
 ```
 
 This way:
-- when I open my terminal, I'll always jump to the `misc`
-(from *miscellaneous*) session.
+- when I open my terminal, I'll always jump to the `main` session.
 - when already in tmux, I can press `prefix + j` to open a
 popup window with a fuzzy picker (thanks to this I don't need to stop
-currently running command, like `neovim`). There, I can choose
+currently running command, like `nvim`). There, I can choose
 another session out of the list of my repos (subdirectories
-of the `~/repos` directory set in `$tang_paths`) or the `misc` session,
+of the `~/repos` directory set in `$tang_paths`) or the `main` session,
 because it already (most likely) exists.
