@@ -27,10 +27,12 @@ function tang -d "Create and/or attach to tmux session"
     or set -l dir (pwd)
 
     tmux has-session -t=$name 2>/dev/null || begin
-        tmux new-session -ds $name -c $dir -n terminal
-
-        set -ql _flag_editor
-        or tmux new-window -dbt "$name:" -c $dir -n editor "fish -C $EDITOR"
+        if set -ql _flag_editor
+            tmux new-session -ds $name -c $dir -n editor "fish -C $EDITOR"
+            tmux new-window -dat "$name:" -c $dir -n terminal
+        else
+            tmux new-session -ds $name -c $dir -n terminal
+        end
     end
 
     set -q TMUX
