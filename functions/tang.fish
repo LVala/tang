@@ -1,10 +1,10 @@
 function tang -d "Create and/or attach to tmux session"
-    set -l options h/help v/version e/no-editor
+    set -l options h/help v/version e/editor
     argparse --max-args 1 $options -- $argv
     or return
 
     set -l cmd (status current-command)
-    set -l tang_help "[-h|--help] [-v|--version] [-e|--no-editor] [SESSION]"
+    set -l tang_help "[-h|--help] [-v|--version] [-e|--editor] [SESSION]"
     set -l tang_version "v0.1.0"
 
     set -ql _flag_help
@@ -29,7 +29,7 @@ function tang -d "Create and/or attach to tmux session"
     tmux has-session -t=$name 2>/dev/null || begin
         tmux new-session -ds $name -c $dir -n terminal
 
-        set -ql _flag_no_editor
+        set -ql _flag_editor
         or tmux new-window -dbt "$name:" -c $dir -n editor "fish -C $EDITOR"
     end
 
