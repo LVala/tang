@@ -5,7 +5,7 @@
 ![GitHub Version](https://img.shields.io/github/v/release/LVala/tang)
 ![GitHub License](https://img.shields.io/github/license/LVala/tang)
 
-### Dead simple [tmux](https://github.com/tmux/tmux/wiki) session picker for [fish](https://fishshell.com/) 🐟
+### Dead simple [tmux](https://github.com/tmux/tmux) session picker for [fish](https://fishshell.com/) 🐟
 
 ![tang demo](tang.gif)
 </div>
@@ -94,10 +94,10 @@ bind-key j display-popup -E "fish -c 'tang -e'"
 ```
 
 This way:
-- when I open my terminal, I'll always jump to the `main` session.
+- when I open my terminal, I'll always jump to the `misc` session.
 - when already in tmux, I can press `prefix + j` to open a
 popup window with a fuzzy picker (thanks to this I don't need to stop
 currently running command, like `nvim`). There, I can choose
 another session out of the list of my repos (subdirectories
-of the `~/repos` directory set in `$tang_paths`) or the `main` session,
+of the `~/repos` directory set in `$tang_paths`) or the `misc` session,
 because it already (most likely) exists.
